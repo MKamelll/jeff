@@ -2,6 +2,8 @@
 #include <QRegularExpression>
 #include <QSyntaxHighlighter>
 
+// stolen: https://felgo.com/doc/qt5/qtwidgets-widgets-codeeditor-example/
+
 class Highlighter : public QSyntaxHighlighter {
     Q_OBJECT
 

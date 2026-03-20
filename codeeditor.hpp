@@ -5,6 +5,8 @@
 
 #include "highlighter.hpp"
 
+// stolen: https://felgo.com/doc/qt5/qtwidgets-widgets-codeeditor-example/
+
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
 
