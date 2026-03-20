@@ -1,0 +1,5 @@
+build/
+.env
+.cache/
+*.stash
+compile_commands.json
