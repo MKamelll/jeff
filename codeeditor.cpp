@@ -4,18 +4,59 @@
 #include <QTextBlock>
 #include <QFont>
 
-CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
-    lineNumberArea = new LineNumberArea(this);
+constexpr auto FONT_NAME = "Dejavu Sans Mono";
+constexpr auto FONT_SIZE = 16;
+
+CodeEditor::CodeEditor(QWidget *parent)
+    : QPlainTextEdit(parent), lineNumberArea(new LineNumberArea(this)),
+      highlighter(new Highlighter(document())), m_parser(ts_parser_new()) {
 
     connect(this, SIGNAL(blockCountChanged(int)), this,
             SLOT(updateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect, int)), this,
             SLOT(updateLineNumberArea(QRect, int)));
 
-    updateLineNumberAreaWidth(0);
-    setFont(QFont("Hack Nerd Font Mono", 16));
+    connect(this->document(), &QTextDocument::contentsChange, this,
+            &CodeEditor::onTextChange);
 
-    highlighter = new Highlighter(document());
+    ts_parser_set_language(m_parser, tree_sitter_cpp());
+    m_tree = ts_parser_parse_string(m_parser, nullptr,
+                                    this->toPlainText().toStdString().c_str(),
+                                    this->toPlainText().length());
+    updateLineNumberAreaWidth(0);
+    setFont(QFont(FONT_NAME, FONT_SIZE));
+}
+
+void CodeEditor::onTextChange(int from, int charsRemoved, int charsAdded) {
+    TSPoint start_point;
+    start_point.row = 0;
+    start_point.column = 0;
+
+    TSPoint old_end_point;
+    old_end_point.row = 0;
+    old_end_point.column = 0;
+
+    TSPoint new_end_point;
+    new_end_point.row = 0;
+    new_end_point.column = 0;
+
+    TSInputEdit edit;
+    edit.start_byte = from;
+    edit.old_end_byte = from + charsRemoved;
+    edit.new_end_byte = from + charsAdded;
+
+    edit.start_point = start_point;
+    edit.old_end_point = old_end_point;
+    edit.new_end_point = new_end_point;
+
+    ts_tree_edit(m_tree, &edit);
+
+    auto new_tree = ts_parser_parse_string(m_parser, m_tree,
+                                           toPlainText().toStdString().c_str(),
+                                           toPlainText().length());
+    m_tree = new_tree;
+
+    qDebug() << ts_node_string(ts_tree_root_node(m_tree)) << "\n";
 }
 
 int CodeEditor::lineNumberAreaWidth() {

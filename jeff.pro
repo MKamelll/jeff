@@ -16,4 +16,8 @@ HEADERS += mainwindow.hpp \
         highlighter.hpp \
         linenumberarea.hpp
 
-# Directories
+CONFIG += link_pkgconfig
+PKGCONFIG += tree-sitter
+
+QMAKE_LFLAGS += -Wl,-rpath,/usr/lib64/tree-sitter
+LIBS += -L/usr/lib64/tree-sitter -ltree-sitter-cpp

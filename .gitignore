@@ -4,3 +4,4 @@ build/
 *.stash
 compile_commands.json
 *Makefile*
+.qtcreator

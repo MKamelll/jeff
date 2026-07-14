@@ -8,7 +8,7 @@
 MainWindow::MainWindow() {
 
     setWindowTitle("jeff");
-    resize(860, 640);
+    resize(600, 400);
 
     createActions();
     createMenus();

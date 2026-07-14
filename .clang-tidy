@@ -5,7 +5,6 @@ Checks: >
   bugprone-*,
   cppcoreguidelines-*,
   performance-*,
-  modernize-*
 
 WarningsAsErrors: ''
 HeaderFileExtensions:
